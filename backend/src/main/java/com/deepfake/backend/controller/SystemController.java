@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RestController
 
 
-@RequestMapping("api/system")
+@RequestMapping("/api/system")
 public class SystemController {
 
 	

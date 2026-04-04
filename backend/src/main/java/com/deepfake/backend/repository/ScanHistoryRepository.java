@@ -1,8 +1,13 @@
 package com.deepfake.backend.repository;
 
-public interface ScanHistoryRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.deepfake.backend.entity.ScanHistory;
+
+@Repository
+public interface ScanHistoryRepository extends JpaRepository<ScanHistory, Long>{
 	
-	// TODO: Bölüm 3 izlendiğinde bu arayüz (interface) JpaRepository'den miras alacak (extends).
 	
 
 }
