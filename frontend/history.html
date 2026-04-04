@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepDetect AI - Geçmiş Taramalar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: '#0b0f19',
+                        panel: '#111827',
+                        neon: '#0ea5e9',
+                        danger: '#ef4444',
+                        safe: '#10b981'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-cyber text-gray-300 h-screen flex font-sans overflow-hidden">
+
+    <aside class="w-64 bg-panel border-r border-gray-800 flex flex-col justify-between">
+        <div>
+            <div class="p-6 border-b border-gray-800">
+                <h1 class="text-xl font-bold text-white tracking-wider">
+                    <i class="fa-solid fa-microchip text-neon mr-2"></i>DeepFake</span>
+                </h1>
+            </div>
+            
+            <nav class="p-4 space-y-2">
+                <a href="index.html" class="flex items-center space-x-3 p-3 hover:bg-gray-800/30 text-gray-400 hover:text-white rounded-lg transition">
+                    <i class="fa-solid fa-radar-border"></i>
+                    <span class="font-medium">Canlı Analiz</span>
+                </a>
+                <a href="history.html" class="flex items-center space-x-3 p-3 bg-gray-800/50 text-neon rounded-lg border border-gray-700">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span class="font-medium">Geçmiş Taramalar</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-gray-800">
+            <div class="flex items-center mb-4 px-3">
+                <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center mr-3 border border-gray-600">
+                    <i class="fa-solid fa-user-astronaut text-gray-400 text-sm"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-bold text-gray-300">Admin</p>
+                    <p class="text-xs text-gray-500 font-mono">ID: 1220606045</p>
+                </div>
+            </div>
+            
+            <a href="login.html" class="flex items-center space-x-3 p-3 hover:bg-red-900/20 text-gray-500 hover:text-red-400 rounded-lg transition group">
+                <i class="fa-solid fa-arrow-right-from-bracket group-hover:text-red-400 transition"></i>
+                <span class="font-medium">Sistemden Çıkış</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-10 overflow-y-auto">
+        
+        <header class="mb-8 flex justify-between items-center">
+            <div>
+                <h2 class="text-2xl font-bold text-white">Analiz Arşivi</h2>
+                <p class="text-sm text-gray-400 mt-1">Sistem tarafından daha önce analiz edilmiş tüm medyalara ait log kayıtları.</p>
+            </div>
+            
+            <div class="flex space-x-3">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-500 text-sm"></i>
+                    <input type="text" placeholder="Dosya adı veya ID ara..." class="bg-gray-900 border border-gray-700 text-white text-sm rounded-lg focus:ring-neon focus:border-neon block w-64 pl-9 p-2.5">
+                </div>
+                <button class="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white p-2.5 rounded-lg transition">
+                    <i class="fa-solid fa-filter"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="bg-panel rounded-xl border border-gray-800 overflow-hidden shadow-2xl">
+            <table class="w-full text-left text-sm text-gray-400">
+                <thead class="text-xs text-gray-500 uppercase bg-gray-900/50 border-b border-gray-800 font-mono">
+                    <tr>
+                        <th scope="col" class="px-6 py-4">Tarama ID</th>
+                        <th scope="col" class="px-6 py-4">Dosya Adı</th>
+                        <th scope="col" class="px-6 py-4">Tarih / Saat</th>
+                        <th scope="col" class="px-6 py-4">Analiz Sonucu</th>
+                        <th scope="col" class="px-6 py-4">Güven Skoru</th>
+                        <th scope="col" class="px-6 py-4 text-center">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-panel border-b border-gray-800 hover:bg-gray-800/30 transition">
+                        <td class="px-6 py-4 font-mono text-gray-500">#SCN-8492</td>
+                        <td class="px-6 py-4 font-medium text-white flex items-center">
+                            <i class="fa-solid fa-file-video text-gray-500 mr-3 text-lg"></i> baskan_konusma_raw.mp4
+                        </td>
+                        <td class="px-6 py-4">13 Mart 2026, 14:30</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-danger/10 text-danger border border-danger/30 text-xs font-bold px-2.5 py-1 rounded">DEEPFAKE</span>
+                        </td>
+                        <td class="px-6 py-4 text-white font-mono font-bold">98.2%</td>
+                        <td class="px-6 py-4 text-center">
+                            <button class="text-neon hover:text-white transition"><i class="fa-solid fa-file-contract text-lg"></i></button>
+                        </td>
+                    </tr>
+
+                    <tr class="bg-panel border-b border-gray-800 hover:bg-gray-800/30 transition">
+                        <td class="px-6 py-4 font-mono text-gray-500">#SCN-8491</td>
+                        <td class="px-6 py-4 font-medium text-white flex items-center">
+                            <i class="fa-solid fa-file-video text-gray-500 mr-3 text-lg"></i> roportaj_sokak_720p.mov
+                        </td>
+                        <td class="px-6 py-4">12 Mart 2026, 09:15</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-safe/10 text-safe border border-safe/30 text-xs font-bold px-2.5 py-1 rounded">ORİJİNAL</span>
+                        </td>
+                        <td class="px-6 py-4 text-white font-mono font-bold">99.1%</td>
+                        <td class="px-6 py-4 text-center">
+                            <button class="text-neon hover:text-white transition"><i class="fa-solid fa-file-contract text-lg"></i></button>
+                        </td>
+                    </tr>
+
+                    <tr class="bg-panel hover:bg-gray-800/30 transition">
+                        <td class="px-6 py-4 font-mono text-gray-500">#SCN-8490</td>
+                        <td class="px-6 py-4 font-medium text-white flex items-center">
+                            <i class="fa-solid fa-file-video text-gray-500 mr-3 text-lg"></i> tiktok_trend_v2.mp4
+                        </td>
+                        <td class="px-6 py-4">10 Mart 2026, 18:45</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-danger/10 text-danger border border-danger/30 text-xs font-bold px-2.5 py-1 rounded">DEEPFAKE</span>
+                        </td>
+                        <td class="px-6 py-4 text-white font-mono font-bold">87.5%</td>
+                        <td class="px-6 py-4 text-center">
+                            <button class="text-neon hover:text-white transition"><i class="fa-solid fa-file-contract text-lg"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="p-4 border-t border-gray-800 flex justify-between items-center text-sm text-gray-500">
+                <span>Toplam 142 tarama kaydı bulundu.</span>
+                <div class="flex space-x-2">
+                    <button class="px-3 py-1 bg-gray-900 border border-gray-700 rounded hover:text-white transition">Önceki</button>
+                    <button class="px-3 py-1 bg-neon/20 border border-neon/50 text-neon rounded">1</button>
+                    <button class="px-3 py-1 bg-gray-900 border border-gray-700 rounded hover:text-white transition">2</button>
+                    <button class="px-3 py-1 bg-gray-900 border border-gray-700 rounded hover:text-white transition">3</button>
+                    <button class="px-3 py-1 bg-gray-900 border border-gray-700 rounded hover:text-white transition">Sonraki</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>

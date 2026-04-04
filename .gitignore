@@ -1,0 +1,48 @@
+# =========================
+# İŞLETİM SİSTEMİ & IDE'LER
+# =========================
+.DS_Store
+Thumbs.db
+.metadata/
+.idea/
+.vscode/
+*.swp
+*.iml
+
+# =========================
+# BACKEND (JAVA / SPRING BOOT)
+# =========================
+backend/target/
+backend/.mvn/
+backend/.settings/
+backend/.classpath
+backend/.project
+# DİKKAT: Eğer veritabanı şifreni gizlemek istersen aşağıdaki satırın başındaki # işaretini kaldır:
+backend/src/main/resources/application.properties
+
+# =========================
+# AI-SERVER (PYTHON / FASTAPI)
+# =========================
+ai-server/__pycache__/
+ai-server/venv/
+ai-server/env/
+ai-server/.env
+*.pyc
+
+# =========================
+# GECİCİ DOSYALAR & VİDEOLAR
+# =========================
+# Python'un video analizi sırasında oluşturduğu geçici (temp) dosyalar
+temp_*
+# Test için kullandığın devasa video dosyalarını Github'a atıp kotayı doldurmamak için:
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# =========================
+# MODELLER (Gelecek İçin)
+# =========================
+# Eğer ileride Sinan 100MB'dan büyük bir model gönderirse GitHub hata verir. 
+# O zaman aşağıdaki satırın başındaki # işaretini kaldırarak modelleri görmezden gelmesini sağlayabilirsin:
+# models/*.pth
