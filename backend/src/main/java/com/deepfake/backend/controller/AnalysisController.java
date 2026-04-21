@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.Map;
 
 import com.deepfake.backend.service.AnalysisService;
 
@@ -21,14 +22,12 @@ public class AnalysisController {
 	
 	
 	@PostMapping(value = "/analyze", produces = "application/json")
-	public String analyzeVideo(
+	public com.deepfake.backend.dto.AnalysisResponse analyzeVideo(
 			@RequestParam("video") MultipartFile videoFile,
 			@RequestParam("ai_model") String aiModel ){
 		
 		System.out.println("Controller çalıştı, servise iletiliyor...");
-		String sonuc = analysisService.processVideoRequest(videoFile, aiModel);
-		
-		return sonuc;
+		return analysisService.processVideoRequest(videoFile, aiModel);
 	}
 	
 }

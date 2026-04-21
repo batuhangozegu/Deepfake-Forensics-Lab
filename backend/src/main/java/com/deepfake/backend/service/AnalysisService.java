@@ -6,6 +6,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.ParameterizedTypeReference;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class AnalysisService {
@@ -17,7 +20,7 @@ public class AnalysisService {
 		this.restClient = restClient;
 	}
 	
-	public String processVideoRequest(MultipartFile video, String modelName) {
+	public com.deepfake.backend.dto.AnalysisResponse processVideoRequest(MultipartFile video, String modelName) {
 	
 		try {
 			
@@ -26,19 +29,19 @@ public class AnalysisService {
 			body.add("ai_model", modelName);
 			
 			
-			String response = restClient.post()
+			com.deepfake.backend.dto.AnalysisResponse response = restClient.post()
 					.uri("http://localhost:8000/predict")
 					.contentType(MediaType.MULTIPART_FORM_DATA)
 					.body(body)
 					.retrieve()
-					.body(String.class);
+					.body(com.deepfake.backend.dto.AnalysisResponse.class);
 			
 			System.out.println("Cevap :" + response);
 			return response;
 			
 		}catch (Exception e) {
 			System.err.println("Python sunucusuna ulaşılamadı: " + e.getMessage());
-            return "{\"status\": \"error\", \"message\": \"Yapay Zeka sunucusu kapalı veya hata verdi.\"}";
+			return new com.deepfake.backend.dto.AnalysisResponse("error", "HATA", 0.0, "Yapay Zeka sunucusu kapalı veya hata verdi.", null);
 		}
 	}
 }

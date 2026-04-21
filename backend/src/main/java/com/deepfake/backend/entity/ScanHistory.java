@@ -42,10 +42,15 @@ public class ScanHistory {
 	@Column(name = "confidence_score", nullable = false)
 	private double confidenceScore;
 	
+	@Column(name = "heatmap_url", length = 500)
+	private String heatmapUrl;
 	
 	@CreationTimestamp
     @DateTimeFormat(iso = ISO.DATE_TIME)
 	@Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+	
+	@Column(name = "report_text", columnDefinition = "TEXT")
+	private String reportText;
 	
 }
