@@ -19,8 +19,7 @@ from pytorch_grad_cam.utils.image import show_cam_on_image
 
 app = FastAPI()
 
-# Frontend resimlere ulaşabilsin diye bulunduğumuz klasörü "/static" ismiyle dışa açıyoruz
-# "static_images" diye bir klasör açalım ki ortalık karışmasın
+
 STATIC_DIR = "static_images"
 os.makedirs(STATIC_DIR, exist_ok=True)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
