@@ -45,6 +45,9 @@ public class ScanHistory {
 	@Column(name = "heatmap_url", length = 500)
 	private String heatmapUrl;
 	
+	@Column(name = "heatmap_video_url", length = 500)
+	private String heatmapVideoUrl;
+	
 	@CreationTimestamp
     @DateTimeFormat(iso = ISO.DATE_TIME)
 	@Column(name = "created_at", nullable = false, updatable = false)

@@ -16,6 +16,7 @@ public class ScanHistoryDto {
     private String result;
     private double confidenceScore;
     private String heatmapUrl;
+    private String heatmapVideoUrl;
     private LocalDateTime createdAt;
     private String reportText;
 }

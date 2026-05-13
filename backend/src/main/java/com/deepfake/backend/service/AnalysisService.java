@@ -41,7 +41,7 @@ public class AnalysisService {
 			
 		}catch (Exception e) {
 			System.err.println("Python sunucusuna ulaşılamadı: " + e.getMessage());
-			return new com.deepfake.backend.dto.AnalysisResponse("error", "HATA", 0.0, "Yapay Zeka sunucusu kapalı veya hata verdi.", null);
+			return new com.deepfake.backend.dto.AnalysisResponse("error", "HATA", 0.0, "Yapay Zeka sunucusu kapalı veya hata verdi.", null, null);
 		}
 	}
 }

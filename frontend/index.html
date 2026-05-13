@@ -135,8 +135,19 @@
                     <!-- ISI HARİTASI İÇİN YENİ ALAN (BAŞLANGIÇTA GİZLİ) -->
                     <div id="heatmapContainer" class="mt-4 hidden">
                         <h4 class="text-gray-400 text-sm font-semibold tracking-widest mb-2 border-t border-gray-800 pt-3"><i class="fa-solid fa-fire text-orange-500 mr-2"></i>ISI HARİTASI (GRAD-CAM)</h4>
-                        <div class="relative rounded-lg overflow-hidden border border-gray-700">
-                            <img id="heatmapImage" src="" alt="Yüz Bölgesi Isı Haritası" class="w-full object-cover">
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Ollama/Referans için En Şüpheli Kare Fotoğrafı -->
+                            <div id="heatmapImageContainer" class="relative rounded-lg overflow-hidden border border-gray-700 bg-black aspect-square hidden">
+                                <span class="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-mono z-10">En Sahte Kare</span>
+                                <img id="heatmapImage" src="" alt="Yüz Bölgesi Isı Haritası" class="w-full h-full object-contain">
+                            </div>
+                            
+                            <!-- Hoca Sunumu için Video -->
+                            <div id="heatmapVideoContainer" class="relative rounded-lg overflow-hidden border border-gray-700 bg-black aspect-square hidden">
+                                <span class="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-mono z-10">Video Analizi</span>
+                                <video id="heatmapVideo" src="" autoplay loop muted playsinline class="w-full h-full object-contain"></video>
+                            </div>
                         </div>
                     </div>
 
@@ -288,12 +299,33 @@
 
                         detailsText.innerText = responseData.details;
 
-                        // -- ISI HARİTASI KONTROLÜ --
+                        // -- ISI HARİTASI (GRAD-CAM FOTO VE VİDEO) KONTROLÜ --
                         const heatmapContainer = document.getElementById('heatmapContainer');
+                        const heatmapImageContainer = document.getElementById('heatmapImageContainer');
+                        const heatmapVideoContainer = document.getElementById('heatmapVideoContainer');
                         const heatmapImage = document.getElementById('heatmapImage');
+                        const heatmapVideo = document.getElementById('heatmapVideo');
                         
+                        let hasHeatmap = false;
+
                         if (responseData.heatmap_url) {
                             heatmapImage.src = responseData.heatmap_url;
+                            heatmapImageContainer.classList.remove('hidden');
+                            hasHeatmap = true;
+                        } else {
+                            heatmapImageContainer.classList.add('hidden');
+                        }
+
+                        if (responseData.heatmap_video_url) {
+                            heatmapVideo.src = responseData.heatmap_video_url;
+                            heatmapVideo.load();
+                            heatmapVideoContainer.classList.remove('hidden');
+                            hasHeatmap = true;
+                        } else {
+                            heatmapVideoContainer.classList.add('hidden');
+                        }
+
+                        if (hasHeatmap) {
                             heatmapContainer.classList.remove('hidden');
                         } else {
                             heatmapContainer.classList.add('hidden');
@@ -324,7 +356,8 @@
                             aiModel: selectedModel,
                             result: isDeepfake ? "DEEPFAKE" : "ORİJİNAL",
                             confidenceScore: fakeScore,
-                            heatmapUrl: responseData.heatmap_url || null
+                            heatmapUrl: responseData.heatmap_url || null,
+                            heatmapVideoUrl: responseData.heatmap_video_url || null
                         };
                         
                         // Senkronize olarak kaydet ve ID'yi al
@@ -358,8 +391,14 @@
             // Isı haritasını sıfırla ki önceki videodan kalmasın
             const heatmapContainer = document.getElementById('heatmapContainer');
             if(heatmapContainer) heatmapContainer.classList.add('hidden');
+            const heatmapImgContainer = document.getElementById('heatmapImageContainer');
+            if(heatmapImgContainer) heatmapImgContainer.classList.add('hidden');
             const heatmapImg = document.getElementById('heatmapImage');
             if(heatmapImg) heatmapImg.src = "";
+            const heatmapVidContainer = document.getElementById('heatmapVideoContainer');
+            if(heatmapVidContainer) heatmapVidContainer.classList.add('hidden');
+            const heatmapVid = document.getElementById('heatmapVideo');
+            if(heatmapVid) { heatmapVid.src = ""; heatmapVid.load(); }
 
             // Raporları sıfırla
             document.getElementById('generateReportBtn').style.display = 'none';

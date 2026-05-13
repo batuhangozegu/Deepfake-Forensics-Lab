@@ -180,8 +180,12 @@
                 }
 
                 let heatmapBtn = item.heatmapUrl ? 
-                    `<a href="${item.heatmapUrl}" target="_blank" class="text-orange-500 hover:text-white transition ml-3" title="Isı Haritasını Göster"><i class="fa-solid fa-fire text-lg"></i></a>` 
+                    `<a href="${item.heatmapUrl}" target="_blank" class="text-orange-500 hover:text-white transition ml-3" title="Isı Haritası (Fotoğraf)"><i class="fa-solid fa-fire text-lg"></i></a>` 
                     : `<span class="text-gray-600 ml-3" title="Isı haritası yok"><i class="fa-solid fa-fire-extinguisher text-lg"></i></span>`;
+
+                let heatmapVideoBtn = item.heatmapVideoUrl ? 
+                    `<a href="${item.heatmapVideoUrl}" target="_blank" class="text-red-500 hover:text-white transition ml-3" title="Video Analizi"><i class="fa-solid fa-film text-lg"></i></a>` 
+                    : `<span class="text-gray-600 ml-3" title="Video analizi yok"><i class="fa-solid fa-video-slash text-lg"></i></span>`;
 
                 let reportBtn = `<button onclick="openHistoryReport(${item.id})" class="text-indigo-500 hover:text-indigo-400 transition ml-3" title="Raporu Gör"><i class="fa-solid fa-file-invoice text-lg"></i></button>`;
 
@@ -198,6 +202,7 @@
                     <td class="px-6 py-4 text-center">
                         ${reportBtn}
                         ${heatmapBtn}
+                        ${heatmapVideoBtn}
                         <button onclick="deleteHistory(${item.id})" class="text-gray-500 hover:text-danger transition ml-4" title="Kaydı Sil"><i class="fa-solid fa-trash text-lg"></i></button>
                     </td>
                 `;
