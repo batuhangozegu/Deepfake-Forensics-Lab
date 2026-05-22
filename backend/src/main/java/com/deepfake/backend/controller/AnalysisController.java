@@ -24,10 +24,11 @@ public class AnalysisController {
 	@PostMapping(value = "/analyze", produces = "application/json")
 	public com.deepfake.backend.dto.AnalysisResponse analyzeVideo(
 			@RequestParam("video") MultipartFile videoFile,
-			@RequestParam("ai_model") String aiModel ){
+			@RequestParam("ai_model") String aiModel,
+			@RequestParam(value = "task_id", required = false) String taskId ){
 		
-		System.out.println("Controller çalıştı, servise iletiliyor...");
-		return analysisService.processVideoRequest(videoFile, aiModel);
+		System.out.println("Controller çalıştı, servise iletiliyor... Task ID: " + taskId);
+		return analysisService.processVideoRequest(videoFile, aiModel, taskId);
 	}
 	
 }

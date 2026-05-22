@@ -1,5 +1,7 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, WebSocket, WebSocketDisconnect, Request
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from typing import Optional
 import uvicorn
 import shutil
 import os
@@ -19,6 +21,38 @@ from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
 
 app = FastAPI()
+
+import asyncio
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: dict[str, WebSocket] = {}
+
+    async def connect(self, websocket: WebSocket, task_id: str):
+        await websocket.accept()
+        self.active_connections[task_id] = websocket
+
+    def disconnect(self, task_id: str):
+        if task_id in self.active_connections:
+            del self.active_connections[task_id]
+
+    async def send_message(self, message: dict, task_id: str):
+        if task_id in self.active_connections:
+            try:
+                await self.active_connections[task_id].send_json(message)
+            except Exception:
+                pass
+
+manager = ConnectionManager()
+
+@app.websocket("/ws/progress/{task_id}")
+async def websocket_endpoint(websocket: WebSocket, task_id: str):
+    await manager.connect(websocket, task_id)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(task_id)
 
 
 STATIC_DIR = "static_images"
@@ -49,7 +83,7 @@ transform = transforms.Compose([
 print("Model Hazır! İstekler bekleniyor...")
 
 @app.post("/predict")
-async def analyze_deepfake(video: UploadFile = File(...), ai_model: str = Form(...)):
+async def analyze_deepfake(video: UploadFile = File(...), ai_model: str = Form(...), task_id: Optional[str] = Form(None)):
     print(f"\n--- YENİ VİDEO ANALİZİ BAŞLADI ---")
 
     # Videoyu sistemin geçici klasörüne kaydet
@@ -87,6 +121,12 @@ async def analyze_deepfake(video: UploadFile = File(...), ai_model: str = Form(.
         success, frame = v_cap.read()
         if not success:
             continue
+
+        if task_id:
+            # Send progress every few frames to avoid overwhelming the socket
+            if idx % 5 == 0 or idx == v_len - 1:
+                progress = int((idx / v_len) * 100)
+                await manager.send_message({"progress": progress, "message": f"Kareler işleniyor ({idx}/{v_len})..."}, task_id)
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         face = mtcnn(frame_rgb)

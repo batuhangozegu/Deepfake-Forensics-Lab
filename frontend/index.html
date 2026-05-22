@@ -137,17 +137,23 @@
                         <h4 class="text-gray-400 text-sm font-semibold tracking-widest mb-2 border-t border-gray-800 pt-3"><i class="fa-solid fa-fire text-orange-500 mr-2"></i>ISI HARİTASI (GRAD-CAM)</h4>
                         
                         <div class="grid grid-cols-2 gap-4">
-                            <!-- Ollama/Referans için En Şüpheli Kare Fotoğrafı -->
-                            <div id="heatmapImageContainer" class="relative rounded-lg overflow-hidden border border-gray-700 bg-black aspect-square hidden">
-                                <span class="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-mono z-10">En Sahte Kare</span>
-                                <img id="heatmapImage" src="" alt="Yüz Bölgesi Isı Haritası" class="w-full h-full object-contain">
+                            <!-- Orijinal Video -->
+                            <div id="originalVideoContainer" class="relative rounded-lg overflow-hidden border border-gray-700 bg-black aspect-square hidden">
+                                <span class="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-mono z-10">Orijinal Video</span>
+                                <video id="originalVideo" src="" controls playsinline class="w-full h-full object-contain"></video>
                             </div>
                             
                             <!-- Hoca Sunumu için Video -->
                             <div id="heatmapVideoContainer" class="relative rounded-lg overflow-hidden border border-gray-700 bg-black aspect-square hidden">
                                 <span class="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-mono z-10">Video Analizi</span>
-                                <video id="heatmapVideo" src="" autoplay loop muted playsinline class="w-full h-full object-contain"></video>
+                                <video id="heatmapVideo" src="" muted playsinline class="w-full h-full object-contain"></video>
                             </div>
+                        </div>
+
+                        <!-- Fotoğraf -->
+                        <div id="heatmapImageContainer" class="relative rounded-lg overflow-hidden border border-gray-700 bg-black w-full mt-4 hidden">
+                            <span class="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded font-mono z-10">En Sahte Kare</span>
+                            <img id="heatmapImage" src="" alt="Yüz Bölgesi Isı Haritası" class="w-full object-contain" style="max-height: 260px;">
                         </div>
                     </div>
 
@@ -180,6 +186,27 @@
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
 
+        // Video Senkronizasyon Mantığı
+        const syncOriginal = document.getElementById('originalVideo');
+        const syncHeatmap = document.getElementById('heatmapVideo');
+
+        syncOriginal.addEventListener('play', () => {
+            if (!syncHeatmap.paused) return;
+            syncHeatmap.play().catch(e => console.warn("Otomatik oynatma tarayıcı tarafından engellendi:", e));
+        });
+
+        syncOriginal.addEventListener('pause', () => {
+            syncHeatmap.pause();
+        });
+
+        syncOriginal.addEventListener('seeked', () => {
+            syncHeatmap.currentTime = syncOriginal.currentTime;
+        });
+
+        syncOriginal.addEventListener('seeking', () => {
+            syncHeatmap.currentTime = syncOriginal.currentTime;
+        });
+
            fileInput.addEventListener('change', async function () {
             if (this.files.length > 0) {
                 const file = this.files[0];
@@ -195,28 +222,39 @@
                     statusText.innerText = "Yapay Zeka Analiz Ediyor...";
                 }
 
-                // --- PROGRESS BAR ANİMASYONU BAŞLIYOR ---
+                // --- WEBSOCKET İLE GERÇEK ZAMANLI İLERLEME ---
+                const taskId = Date.now() + '-' + Math.random().toString(36).substring(2);
                 const progressBar = document.getElementById('progressBar');
+                const loadingText = document.querySelector('#loadingZone h3');
                 progressBar.style.width = "0%";
-                let progress = 0;
+                loadingText.innerText = "Bağlantı kuruluyor...";
                 
-                // Gittikçe yavaşlayan daha gerçekçi bir progress bar simülasyonu
-                const progressInterval = setInterval(() => {
-                    // 95'e kalan mesafenin küçük bir yüzdesini ekle
-                    // Böylece başlangıçta hızlı dolar, sona doğru iyice yavaşlar.
-                    const remaining = 95 - progress;
-                    const step = remaining * (Math.random() * 0.03 + 0.02) + 0.2;
-                    progress += step;
-                    
-                    if (progress > 95) progress = 95;
-                    progressBar.style.width = progress + "%";
-                }, 300);
-                // ----------------------------------------
+                const ws = new WebSocket(`ws://localhost:8000/ws/progress/${taskId}`);
+                ws.onmessage = function(event) {
+                    const data = JSON.parse(event.data);
+                    if (data.progress !== undefined) {
+                        progressBar.style.width = data.progress + "%";
+                    }
+                    if (data.message) {
+                        loadingText.innerText = data.message;
+                    }
+                };
+                ws.onerror = function() {
+                    console.warn("WebSocket bağlantısı kurulamadı. İlerleme anlık gösterilemeyebilir.");
+                    loadingText.innerText = "Yapay Zeka Analiz Ediyor...";
+                };
+
+                // Orijinal videoyu hemen arayüze ekle
+                const originalVideo = document.getElementById('originalVideo');
+                originalVideo.src = URL.createObjectURL(file);
+                originalVideo.load();
+                document.getElementById('originalVideoContainer').classList.remove('hidden');
 
                 const formData = new FormData();
                 const selectedModel = 'Xception'; // Veya 'efficientnet'
                 formData.append('video', file);
                 formData.append('ai_model', selectedModel);
+                formData.append('task_id', taskId);
 
                 try {
                     const response = await fetch('http://localhost:8080/api/analysis/analyze', {
@@ -242,8 +280,10 @@
                         return;
                     }
                     
-                    // Cevap geldi! Barı hemen %100 yap ve animasyonu durdur
-                    clearInterval(progressInterval);
+                    // Cevap geldi! Barı %100 yap
+                    if(ws.readyState === WebSocket.OPEN) {
+                        ws.close();
+                    }
                     progressBar.style.width = "100%";
 
                     // Kullanıcı %100'ü görsün diye yarım saniye (500ms) bekle, sonra sonucu göster
@@ -374,7 +414,7 @@
                     }, 500); // 500ms bekleme süresi
 
                 } catch (error) {
-                    clearInterval(progressInterval);
+                    if(ws.readyState === WebSocket.OPEN) ws.close();
                     console.error("Bağlantı hatası:", error);
                     alert("Sunucuya ulaşılamadı! Java Spring Boot uygulamasının çalıştığından emin olun.");
                     resetSystem();
@@ -391,6 +431,10 @@
             // Isı haritasını sıfırla ki önceki videodan kalmasın
             const heatmapContainer = document.getElementById('heatmapContainer');
             if(heatmapContainer) heatmapContainer.classList.add('hidden');
+            const originalVidContainer = document.getElementById('originalVideoContainer');
+            if(originalVidContainer) originalVidContainer.classList.add('hidden');
+            const originalVid = document.getElementById('originalVideo');
+            if(originalVid) { originalVid.src = ""; originalVid.load(); }
             const heatmapImgContainer = document.getElementById('heatmapImageContainer');
             if(heatmapImgContainer) heatmapImgContainer.classList.add('hidden');
             const heatmapImg = document.getElementById('heatmapImage');

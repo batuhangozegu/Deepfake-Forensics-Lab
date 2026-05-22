@@ -1,0 +1,1 @@
+VALIDASYON HATASI: [{'type': 'missing', 'loc': ('body', 'video'), 'msg': 'Field required', 'input': None}, {'type': 'missing', 'loc': ('body', 'ai_model'), 'msg': 'Field required', 'input': None}]

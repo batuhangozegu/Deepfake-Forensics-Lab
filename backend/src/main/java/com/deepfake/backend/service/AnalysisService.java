@@ -10,6 +10,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.core.io.Resource;
+
 @Service
 public class AnalysisService {
 
@@ -20,14 +24,16 @@ public class AnalysisService {
 		this.restClient = restClient;
 	}
 	
-	public com.deepfake.backend.dto.AnalysisResponse processVideoRequest(MultipartFile video, String modelName) {
+	public com.deepfake.backend.dto.AnalysisResponse processVideoRequest(MultipartFile video, String modelName, String taskId) {
 	
 		try {
-			
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 			body.add("video", video.getResource());
 			body.add("ai_model", modelName);
 			
+			if (taskId != null && !taskId.isEmpty()) {
+				body.add("task_id", taskId);
+			}
 			
 			com.deepfake.backend.dto.AnalysisResponse response = restClient.post()
 					.uri("http://localhost:8000/predict")
