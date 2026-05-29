@@ -186,24 +186,28 @@
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
 
-        // Video Senkronizasyon Mantığı
+        // Video Senkronizasyon Mantiği
         const syncOriginal = document.getElementById('originalVideo');
         const syncHeatmap = document.getElementById('heatmapVideo');
 
         syncOriginal.addEventListener('play', () => {
+            if (!syncHeatmap.src || syncHeatmap.src === window.location.href) return;
             if (!syncHeatmap.paused) return;
-            syncHeatmap.play().catch(e => console.warn("Otomatik oynatma tarayıcı tarafından engellendi:", e));
+            syncHeatmap.play().catch(e => console.warn("Senkronizasyon hatasi:", e));
         });
 
         syncOriginal.addEventListener('pause', () => {
+            if (!syncHeatmap.src || syncHeatmap.src === window.location.href) return;
             syncHeatmap.pause();
         });
 
         syncOriginal.addEventListener('seeked', () => {
+            if (!syncHeatmap.src || syncHeatmap.src === window.location.href) return;
             syncHeatmap.currentTime = syncOriginal.currentTime;
         });
 
         syncOriginal.addEventListener('seeking', () => {
+            if (!syncHeatmap.src || syncHeatmap.src === window.location.href) return;
             syncHeatmap.currentTime = syncOriginal.currentTime;
         });
 
@@ -244,11 +248,9 @@
                     loadingText.innerText = "Yapay Zeka Analiz Ediyor...";
                 };
 
-                // Orijinal videoyu hemen arayüze ekle
-                const originalVideo = document.getElementById('originalVideo');
-                originalVideo.src = URL.createObjectURL(file);
-                originalVideo.load();
-                document.getElementById('originalVideoContainer').classList.remove('hidden');
+                // Blob URL'yi sakla — resultZone görünür olunca set edeceğiz
+                // (Gizli elementlere src atayıp load() çağırmak tarayıcılarda çalışmıyor)
+                const originalVideoBlobUrl = URL.createObjectURL(file);
 
                 const formData = new FormData();
                 const selectedModel = 'Xception'; // Veya 'efficientnet'
@@ -345,30 +347,32 @@
                         const heatmapVideoContainer = document.getElementById('heatmapVideoContainer');
                         const heatmapImage = document.getElementById('heatmapImage');
                         const heatmapVideo = document.getElementById('heatmapVideo');
-                        
-                        let hasHeatmap = false;
+                        const originalVideoContainerEl = document.getElementById('originalVideoContainer');
+                        const originalVideoEl = document.getElementById('originalVideo');
+
+                        // Heatmap alt container'larını hazırla
+                        heatmapContainer.classList.remove('hidden');
+
+                        // Orijinal video (sunucudan gelen URL ile — blob URL kullanılmıyor)
+                        if (responseData.original_video_url) {
+                            originalVideoContainerEl.classList.remove('hidden');
+                            originalVideoEl.src = responseData.original_video_url;
+                        } else {
+                            originalVideoContainerEl.classList.add('hidden');
+                        }
 
                         if (responseData.heatmap_url) {
                             heatmapImage.src = responseData.heatmap_url;
                             heatmapImageContainer.classList.remove('hidden');
-                            hasHeatmap = true;
                         } else {
                             heatmapImageContainer.classList.add('hidden');
                         }
 
                         if (responseData.heatmap_video_url) {
                             heatmapVideo.src = responseData.heatmap_video_url;
-                            heatmapVideo.load();
                             heatmapVideoContainer.classList.remove('hidden');
-                            hasHeatmap = true;
                         } else {
                             heatmapVideoContainer.classList.add('hidden');
-                        }
-
-                        if (hasHeatmap) {
-                            heatmapContainer.classList.remove('hidden');
-                        } else {
-                            heatmapContainer.classList.add('hidden');
                         }
 
                         // Rapor verilerini kaydet ve butonu göster
@@ -379,9 +383,19 @@
                         };
                         document.getElementById('generateReportBtn').style.display = 'block';
 
-                        // Ekranları Değiştir
+                        // Ekranları Değiştir — resultZone'u ÖNCE aç
                         loadingZone.classList.add('hidden');
                         resultZone.classList.remove('hidden');
+
+                        // Tarayıcının DOM'u render etmesini bekle, sonra videoları yükle
+                        requestAnimationFrame(() => {
+                            requestAnimationFrame(() => {
+                                originalVideoEl.load();
+                                if (responseData.heatmap_video_url) {
+                                    heatmapVideo.load();
+                                }
+                            });
+                        });
 
                         if (statusPing) statusPing.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75";
                         if (statusDot) statusDot.className = "relative inline-flex rounded-full h-3 w-3 bg-green-500";
