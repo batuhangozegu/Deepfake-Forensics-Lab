@@ -31,7 +31,6 @@ EfficientNet-B5 tabanlı yapay zeka motoru, Grad-CAM ısı haritaları ve Ollama
 - [API Referansı](#-api-referansı)
 - [Kullanım Akışı](#-kullanım-akışı)
 - [Veritabanı Şeması](#-veritabanı-şeması)
-- [Katkı](#-katkı)
 
 ---
 
@@ -441,18 +440,6 @@ task_id:  "1718541234567-abc123xyz"
 - `passive` kullanıcılar giriş denemesinde `403 Forbidden` alır
 - Admin işlemleri rol kontrolüne tabidir (backend + frontend)
 - CORS tüm origin'lere açıktır (geliştirme ortamı için) — production'da kısıtlanmalıdır
-
----
-
-## 🤝 Katkı
-
-1. Repo'yu fork edin
-2. Feature branch oluşturun (`git checkout -b feature/yeni-ozellik`)
-3. Değişikliklerinizi commit edin (`git commit -m 'feat: yeni özellik eklendi'`)
-4. Branch'i push edin (`git push origin feature/yeni-ozellik`)
-5. Pull Request açın
-
----
 
 <div align="center">
 
