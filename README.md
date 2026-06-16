@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔍 ThirdEye — Deepfake Forensics Lab
+# 🔍 Derin Öğrenme ile Deepfake Tespiti
 
 <img src="https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
 <img src="https://img.shields.io/badge/Spring_Boot-3.4.3-6DB33F?style=for-the-badge&logo=spring&logoColor=white" />
@@ -37,7 +37,7 @@ EfficientNet-B5 tabanlı yapay zeka motoru, Grad-CAM ısı haritaları ve Ollama
 
 ## 🎯 Proje Hakkında
 
-**ThirdEye**, video içeriklerindeki deepfake manipülasyonlarını tespit etmek için geliştirilmiş bir **adli analiz (forensic analysis) platformudur**. Proje, üç bağımsız servisin birlikte çalıştığı bir **mikro-servis mimarisi** üzerine kurulmuştur:
+**Derin Öğrenme ile Deepfake Tespiti**, video içeriklerindeki deepfake manipülasyonlarını tespit etmek için geliştirilmiş bir **adli analiz (forensic analysis) platformudur**. Proje, üç bağımsız servisin birlikte çalıştığı bir **mikro-servis mimarisi** üzerine kurulmuştur:
 
 1. **AI Sunucusu** – Yüz tespiti, çerçeve bazlı deepfake skoru hesaplama ve Grad-CAM görselleştirmesi
 2. **Backend API** – Kullanıcı yönetimi, tarama geçmişi, Ollama ile doğal dil rapor üretimi
@@ -252,7 +252,7 @@ spring.datasource.username=KULLANICI_ADINIZ
 spring.datasource.password=ŞİFRENİZ
 spring.jpa.hibernate.ddl-auto=update
 spring.ai.ollama.base-url=http://localhost:11434
-spring.ai.ollama.chat.model=llama3
+spring.ai.ollama.chat.options.model=gemma4
 ```
 
 ---
@@ -300,7 +300,7 @@ Uygulama `http://localhost:8080` adresinde başlar. İlk çalıştırmada verita
 
 ```bash
 ollama serve
-ollama pull llama3   # veya tercih ettiğiniz model
+ollama pull gemma4   # veya tercih ettiğiniz model
 ```
 
 ---
@@ -456,7 +456,7 @@ task_id:  "1718541234567-abc123xyz"
 
 <div align="center">
 
-**ThirdEye** — Görünmeyeni görür.
+**Derin Öğrenme ile Deepfake Tespiti** — Görünmeyeni görür.
 
 *Bitirme Projesi — 2026*
 
