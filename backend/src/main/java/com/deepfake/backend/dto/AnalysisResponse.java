@@ -6,5 +6,6 @@ public record AnalysisResponse(
     Double confidence,
     String details,
     String heatmap_url,
-    String heatmap_video_url
+    String heatmap_video_url,
+    String original_video_url
 ) {}

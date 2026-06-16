@@ -9,7 +9,9 @@ public interface ScanHistoryService {
 
 	public ScanHistoryDto saveHistory(ScanHistoryDto scanHistoryDto);
 	public List<ScanHistoryDto> getAllScanHistories();
+	public List<ScanHistoryDto> getAllScanHistoriesByUserId(Long userId);
 	public ScanHistoryDto getScanHistoryById(Long id);
 	public void deleteScanHistoryById(Long id);
 	
 }
+

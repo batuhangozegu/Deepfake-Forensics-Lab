@@ -19,4 +19,6 @@ public class ScanHistoryDto {
     private String heatmapVideoUrl;
     private LocalDateTime createdAt;
     private String reportText;
+    private Long userId;
 }
+

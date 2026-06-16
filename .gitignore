@@ -42,8 +42,7 @@ temp_*
 *.mkv
 
 # =========================
-# MODELLER (Gelecek İçin)
+# MODELLER
 # =========================
-# Eğer ileride Sinan 100MB'dan büyük bir model gönderirse GitHub hata verir. 
-# O zaman aşağıdaki satırın başındaki # işaretini kaldırarak modelleri görmezden gelmesini sağlayabilirsin:
-# models/*.pth
+# Modeller 100MB'dan büyük olduğu için GitHub push hatalarını önlemek amacıyla yoksayılıyor.
+models/

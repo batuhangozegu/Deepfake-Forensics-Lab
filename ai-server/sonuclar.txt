@@ -1,0 +1,76 @@
+============================================================
+
+🔄 Test ediliyor: EfficientNet-B4
+
+📊 EfficientNet-B4 Sonuçları:
+              precision    recall  f1-score   support
+
+        fake       1.00      0.44      0.61     43877
+        real       0.21      0.99      0.35      6746
+
+    accuracy                           0.52     50623
+   macro avg       0.60      0.72      0.48     50623
+weighted avg       0.89      0.52      0.58     50623
+
+AUC: 0.8037
+============================================================
+
+🔄 Test ediliyor: Xception
+
+📊 Xception Sonuçları:
+              precision    recall  f1-score   support
+
+        fake       0.78      0.52      0.62     43877
+        real       0.01      0.03      0.02      6746
+
+    accuracy                           0.46     50623
+   macro avg       0.39      0.28      0.32     50623
+weighted avg       0.68      0.46      0.54     50623
+
+AUC: 0.8029
+============================================================
+
+🔄 Test ediliyor: ConvNeXt-Base
+
+📊 ConvNeXt-Base Sonuçları:
+              precision    recall  f1-score   support
+
+        fake       0.98      0.97      0.97     43877
+        real       0.80      0.87      0.83      6746
+
+    accuracy                           0.95     50623
+   macro avg       0.89      0.92      0.90     50623
+weighted avg       0.96      0.95      0.95     50623
+
+AUC: 0.9815
+============================================================
+
+🔄 Test ediliyor: EfficientNet-B5
+
+📊 EfficientNet-B5 Sonuçları:
+              precision    recall  f1-score   support
+
+        fake       0.97      0.98      0.98     43877
+        real       0.89      0.83      0.86      6746
+
+    accuracy                           0.96     50623
+   macro avg       0.93      0.91      0.92     50623
+weighted avg       0.96      0.96      0.96     50623
+
+AUC: 0.9834
+============================================================
+
+🔄 Test ediliyor: EfficientNet-B5 + SBI
+
+📊 EfficientNet-B5 + SBI Sonuçları:
+              precision    recall  f1-score   support
+
+        fake       0.98      0.98      0.98     43877
+        real       0.85      0.84      0.85      6746
+
+    accuracy                           0.96     50623
+   macro avg       0.91      0.91      0.91     50623
+weighted avg       0.96      0.96      0.96     50623
+
+AUC: 0.9808
+============================================================

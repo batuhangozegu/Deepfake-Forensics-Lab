@@ -33,7 +33,16 @@ public class ScanHistoryServiceImpl implements ScanHistoryService {
 	}
 
 	@Override
+	public List<ScanHistoryDto> getAllScanHistoriesByUserId(Long userId) {
+		List<ScanHistory> scanHistoryList = scanHistoryRepository.findByUserId(userId);
+		return scanHistoryList.stream()
+				.map(com.deepfake.backend.mapper.ScanHistoryMapper::mapToScanHistoryDto)
+				.collect(java.util.stream.Collectors.toList());
+	}
+
+	@Override
 	public ScanHistoryDto getScanHistoryById(Long id) {
+
 		Optional<ScanHistory> optional = scanHistoryRepository.findById(id);
 		if(optional.isPresent())
 		{

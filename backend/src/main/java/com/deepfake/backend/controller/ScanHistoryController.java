@@ -30,9 +30,13 @@ public class ScanHistoryController {
 	}
 	
 	@GetMapping(path = "/list")
-	public List<ScanHistoryDto> getAllScanHistories(){
+	public List<ScanHistoryDto> getAllScanHistories(@org.springframework.web.bind.annotation.RequestParam(value = "userId", required = false) Long userId){
+		if (userId != null) {
+			return scanHistoryService.getAllScanHistoriesByUserId(userId);
+		}
 		return scanHistoryService.getAllScanHistories();
 	}
+
 	
 	@GetMapping(path = "/list/{id}")
 	public ScanHistoryDto getScanHistoryById(@PathVariable Long id){

@@ -55,5 +55,9 @@ public class ScanHistory {
 	
 	@Column(name = "report_text", columnDefinition = "TEXT")
 	private String reportText;
-	
+
+	@Column(name = "user_id")
+	private Long userId;
+
 }
+

@@ -58,7 +58,7 @@ function VideoBox({ label, labelColor, url, videoRef, onPlay, onPause, onSeeked 
       }}>{label}</div>
       <div style={{
         position: "relative", borderRadius: 12, overflow: "hidden",
-        border: "1px solid var(--border)", background: "#020617", height: 180,
+        border: "1px solid var(--border)", background: "#020617", height: 240,
         display: "flex", alignItems: "center", justifyContent: "center"
       }}>
         {url ? (
@@ -251,7 +251,7 @@ function ResultView({ result, onReset, onOpenReport }) {
           {/* Bilgi satırları */}
           <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
             {[
-              { Icon: IconChip, k: "Model", v: "Xception v2" },
+              { Icon: IconChip, k: "Model", v: "EfficientNet-B5" },
               { Icon: IconFilm, k: "Dosya Adı", v: result.fileName.length > 15 ? result.fileName.slice(0, 12) + "..." : result.fileName },
             ].map(({ Icon, k, v }) => (
               <div key={k} style={{

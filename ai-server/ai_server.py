@@ -20,7 +20,27 @@ from pytorch_grad_cam import GradCAM
 from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
 from pytorch_grad_cam.utils.image import show_cam_on_image
 
+from fastapi.exceptions import RequestValidationError
+from starlette.middleware.base import BaseHTTPMiddleware
+
 app = FastAPI()
+
+class LogRequestMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if request.url.path == "/predict":
+            print(f"[INCOMING] Content-Type: {request.headers.get('content-type', 'MISSING')}")
+        return await call_next(request)
+
+app.add_middleware(LogRequestMiddleware)
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    print(f"Validation Error: {exc.errors()}")
+    print(f"Content-Type header: {request.headers.get('content-type', 'MISSING')}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()},
+    )
 
 import asyncio
 
@@ -62,15 +82,15 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(f"Kullanılan Cihaz: {device.type.upper()} (Sistem devrede!)")
 
-print("Yapay Zeka Modeli (Xception) Yükleniyor...")
-model = timm.create_model('xception', pretrained=False, num_classes=2)
+print("Yapay Zeka Modeli (efficientnet_b5) Yükleniyor...")
+model = timm.create_model('efficientnet_b5', pretrained=False, num_classes=2)
 
-model.load_state_dict(torch.load("/home/bgozegu/Masaüstü/BitirmeProjesi/models/best_xception.pth", map_location=device))
+model.load_state_dict(torch.load("/home/bgozegu/Masaüstü/BitirmeProjesi/models/en_iyi_efficientnet_b5sinan.pth", map_location=device))
 model.to(device)
 model.eval()
 
 # Grad-CAM Kurulumu (Xception'ın conv4 katmanına kanca atıyoruz)
-target_layers = [model.conv4]
+target_layers = [model.conv_head]
 cam = GradCAM(model=model, target_layers=target_layers)
 
 mtcnn = MTCNN(keep_all=False, margin=20, device=device)
@@ -127,6 +147,9 @@ async def analyze_deepfake(video: UploadFile = File(...), ai_model: str = Form(.
             if idx % 5 == 0 or idx == v_len - 1:
                 progress = int((idx / v_len) * 100)
                 await manager.send_message({"progress": progress, "message": f"Kareler işleniyor ({idx}/{v_len})..."}, task_id)
+                # Event loop'a kontrol ver — GPU işlemleri loop'u bloklar,
+                # bu satır olmadan WebSocket mesajları tarayıcıya ulaşamaz
+                await asyncio.sleep(0)
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         face = mtcnn(frame_rgb)
@@ -142,7 +165,7 @@ async def analyze_deepfake(video: UploadFile = File(...), ai_model: str = Form(.
             with torch.no_grad():
                 outputs = model(input_tensor)
                 probabilities = torch.nn.functional.softmax(outputs, dim=1)
-                prob_fake = probabilities[0][1].item() * 100
+                prob_fake = probabilities[0][0].item() * 100
                 fake_votes += prob_fake
 
                 # En sahte kareyi yakala (Ollama JPG için)
@@ -154,7 +177,7 @@ async def analyze_deepfake(video: UploadFile = File(...), ai_model: str = Form(.
 
             # --- BU KARE İÇİN GRAD-CAM ÜRET (Video için) ---
             face_np = np.array(face_img.resize(FRAME_SIZE), dtype=np.float32) / 255.0
-            targets = [ClassifierOutputTarget(1)]
+            targets = [ClassifierOutputTarget(0)]
             grayscale_cam = cam(input_tensor=input_tensor, targets=targets)[0, :]
 
             visualization_rgb = show_cam_on_image(face_np, grayscale_cam, use_rgb=True)
@@ -164,6 +187,28 @@ async def analyze_deepfake(video: UploadFile = File(...), ai_model: str = Form(.
 
     v_cap.release()
     video_writer.release()
+
+    # --- ORİJİNAL VİDEOYU DA STATIC KLASÖRÜNE KOPYALA (tarayıcı için H.264 MP4) ---
+    original_mp4_filename = "yok"
+    original_mp4_path = os.path.join(STATIC_DIR, f"original_{base_name}.mp4")
+    ffmpeg_orig_cmd = [
+        "ffmpeg", "-y",
+        "-i", temp_video_path,
+        "-vcodec", "libx264",
+        "-acodec", "aac",
+        "-pix_fmt", "yuv420p",
+        "-preset", "fast",
+        "-crf", "23",
+        "-movflags", "+faststart",
+        original_mp4_path
+    ]
+    orig_result = subprocess.run(ffmpeg_orig_cmd, capture_output=True, text=True)
+    if orig_result.returncode == 0:
+        original_mp4_filename = f"original_{base_name}.mp4"
+        print(f"📹 Orijinal video static'e kopyalandı: {original_mp4_path}")
+    else:
+        print(f"⚠️  Orijinal video dönüştürülemedi: {orig_result.stderr[:200]}")
+
     os.remove(temp_video_path)
 
     if processed_faces == 0:
@@ -226,8 +271,10 @@ async def analyze_deepfake(video: UploadFile = File(...), ai_model: str = Form(.
         "details": f"{ai_model.upper()} modeli ile {processed_faces} yüz karesi incelendi.",
         # Ollama bu URL'yi kullanacak (JPG)
         "heatmap_url": f"http://localhost:8000/static/{heatmap_jpg_filename}" if heatmap_jpg_filename != "yok" else None,
-        # Frontend videoyu bu URL ile oynatacak (H.264 MP4)
-        "heatmap_video_url": f"http://localhost:8000/static/{heatmap_mp4_filename}" if heatmap_mp4_filename != "yok" else None
+        # Frontend heatmap videoyu bu URL ile oynatacak (H.264 MP4)
+        "heatmap_video_url": f"http://localhost:8000/static/{heatmap_mp4_filename}" if heatmap_mp4_filename != "yok" else None,
+        # Frontend orijinal videoyu bu URL ile oynatacak (H.264 MP4)
+        "original_video_url": f"http://localhost:8000/static/{original_mp4_filename}" if original_mp4_filename != "yok" else None
     }
 
 if __name__ == "__main__":

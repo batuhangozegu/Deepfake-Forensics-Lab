@@ -16,7 +16,8 @@ public class ScanHistoryMapper {
             scanHistory.getHeatmapUrl(),
             scanHistory.getHeatmapVideoUrl(),
             scanHistory.getCreatedAt(),
-            scanHistory.getReportText()
+            scanHistory.getReportText(),
+            scanHistory.getUserId()
         );
     }
 
@@ -31,7 +32,9 @@ public class ScanHistoryMapper {
             scanHistoryDto.getHeatmapUrl(),
             scanHistoryDto.getHeatmapVideoUrl(),
             scanHistoryDto.getCreatedAt(),
-            scanHistoryDto.getReportText()
+            scanHistoryDto.getReportText(),
+            scanHistoryDto.getUserId()
         );
     }
 }
+
