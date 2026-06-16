@@ -14,6 +14,12 @@ import timm
 from PIL import Image
 import numpy as np
 import tempfile
+from pathlib import Path
+
+# Scriptin bulunduğu klasör: .../BitirmeProjesi/ai-server/
+BASE_DIR = Path(__file__).resolve().parent
+# Modeller klasörü: .../BitirmeProjesi/models/
+MODELS_DIR = BASE_DIR.parent / "models"
 
 # Grad-CAM kütüphaneleri
 from pytorch_grad_cam import GradCAM
@@ -85,7 +91,7 @@ print(f"Kullanılan Cihaz: {device.type.upper()} (Sistem devrede!)")
 print("Yapay Zeka Modeli (efficientnet_b5) Yükleniyor...")
 model = timm.create_model('efficientnet_b5', pretrained=False, num_classes=2)
 
-model.load_state_dict(torch.load("/home/bgozegu/Masaüstü/BitirmeProjesi/models/en_iyi_efficientnet_b5sinan.pth", map_location=device))
+model.load_state_dict(torch.load(MODELS_DIR / "en_iyi_efficientnet_b5sinan.pth", map_location=device))
 model.to(device)
 model.eval()
 

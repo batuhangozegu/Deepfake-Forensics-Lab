@@ -2,14 +2,28 @@ import cv2
 import torch
 import timm
 import numpy as np
+import argparse
+from pathlib import Path
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from facenet_pytorch import MTCNN
 
+# --- Argümanlar ---
+parser = argparse.ArgumentParser(description="Tek Video Üzerinde Deepfake Testi")
+parser.add_argument("--video", required=True, help="Test edilecek videonun yolu")
+parser.add_argument("--model", default=None,  help="Model .pth yolu (varsayılan: ../models/en_iyi_efficientnet_b5sinan.pth)")
+args = parser.parse_args()
+
+# --- Dosya Yolları ---
+BASE_DIR   = Path(__file__).resolve().parent
+MODELS_DIR = BASE_DIR.parent / "models"
+model_path = Path(args.model) if args.model else MODELS_DIR / "en_iyi_efficientnet_b5sinan.pth"
+video_path = args.video
+
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 model = timm.create_model('efficientnet_b5', pretrained=False, num_classes=2)
-model.load_state_dict(torch.load('/home/bgozegu/Masaüstü/BitirmeProjesi/models/en_iyi_efficientnet_b5sinan.pth', map_location=device))
+model.load_state_dict(torch.load(model_path, map_location=device))
 model = model.to(device)
 model.eval()
 
@@ -21,13 +35,14 @@ transform = A.Compose([
     ToTensorV2(),
 ])
 
-# Test videosu — elindeki fake bir videoyu yaz
-video_path = '/home/bgozegu/Masaüstü/model/celebdf/Celeb-synthesis/id0_id1_0000.mp4'
-
 cap = cv2.VideoCapture(video_path)
 cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 success, frame = cap.read()
 cap.release()
+
+if not success:
+    print(f"Video okunamadı: {video_path}")
+    exit(1)
 
 frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 boxes, probs = detector.detect(frame_rgb)
@@ -56,3 +71,5 @@ if boxes is not None:
     
     print(f"Fake: %{prob_fake:.1f}")
     print(f"Real: %{prob_real:.1f}")
+else:
+    print("Yüz tespit edilemedi.")

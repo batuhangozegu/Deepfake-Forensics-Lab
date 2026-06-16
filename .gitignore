@@ -44,5 +44,4 @@ temp_*
 # =========================
 # MODELLER
 # =========================
-# Modeller 100MB'dan büyük olduğu için GitHub push hatalarını önlemek amacıyla yoksayılıyor.
-models/
+# Modeller artık Git LFS ile takip edilecektir.

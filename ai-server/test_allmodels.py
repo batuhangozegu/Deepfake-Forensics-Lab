@@ -3,11 +3,26 @@ import cv2
 import torch
 import timm
 import numpy as np
+import argparse
+from pathlib import Path
 from sklearn.metrics import classification_report, roc_auc_score
 from tqdm import tqdm
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 import torchvision.models as tv_models
+
+# --- Argümanlar ---
+parser = argparse.ArgumentParser(description="Tüm Modelleri Karşılaştırmalı Test Et")
+parser.add_argument("--fake", required=True, help="Fake görsel klasörünün yolu")
+parser.add_argument("--real", required=True, help="Real görsel klasörünün yolu")
+args = parser.parse_args()
+
+fake_folder = args.fake
+real_folder = args.real
+
+# --- Dosya Yolları ---
+BASE_DIR   = Path(__file__).resolve().parent
+MODELS_DIR = BASE_DIR.parent / "models"
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -17,34 +32,31 @@ transform = A.Compose([
     ToTensorV2(),
 ])
 
-fake_folder = "/home/bgozegu/Masaüstü/model/dataset_v2/val/fake"
-real_folder = "/home/bgozegu/Masaüstü/model/dataset_v2/val/real"
-
 models_config = [
     {
         "name": "EfficientNet-B4",
         "model_fn": lambda: timm.create_model('efficientnet_b4', pretrained=False, num_classes=2),
-        "path": "/home/bgozegu/Masaüstü/BitirmeProjesi/models/en_iyi_deepfake_modeli.pth"
+        "path": MODELS_DIR / "en_iyi_deepfake_modeli.pth"
     },
     {
         "name": "Xception",
         "model_fn": lambda: timm.create_model('xception', pretrained=False, num_classes=2),
-        "path": "/home/bgozegu/Masaüstü/BitirmeProjesi/models/best_xception.pth"
+        "path": MODELS_DIR / "best_xception.pth"
     },
     {
         "name": "ConvNeXt-Base",
         "model_fn": lambda: timm.create_model('convnext_base', pretrained=False, num_classes=2),
-        "path": "/home/bgozegu/Masaüstü/BitirmeProjesi/models/en_iyi_convnext.pth"
+        "path": MODELS_DIR / "en_iyi_convnext.pth"
     },
     {
         "name": "EfficientNet-B5",
         "model_fn": lambda: timm.create_model('efficientnet_b5', pretrained=False, num_classes=2),
-        "path": "/home/bgozegu/Masaüstü/BitirmeProjesi/models/en_iyi_efficientnet_b5sinan.pth"
+        "path": MODELS_DIR / "en_iyi_efficientnet_b5sinan.pth"
     },
     {
         "name": "EfficientNet-B5 + SBI",
         "model_fn": lambda: timm.create_model('efficientnet_b5', pretrained=False, num_classes=2),
-        "path": "/home/bgozegu/Masaüstü/BitirmeProjesi/models/en_iyi_b5_sbi.pth"
+        "path": MODELS_DIR / "en_iyi_b5_sbi.pth"
     },
 ]
 

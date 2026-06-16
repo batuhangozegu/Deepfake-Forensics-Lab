@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
+
+OUTPUT_DIR = Path(__file__).resolve().parent
 
 fig, ax = plt.subplots(figsize=(6, 4))
 
@@ -24,5 +27,5 @@ for bar in bars1 + bars2:
             f'{int(bar.get_height()):,}', ha='center', va='bottom', fontsize=9)
 
 plt.tight_layout()
-plt.savefig('/home/bgozegu/Masaüstü/yuz_dagilimi.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / 'yuz_dagilimi.png', dpi=150, bbox_inches='tight')
 print("Kaydedildi: yuz_dagilimi.png")

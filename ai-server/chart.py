@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from pathlib import Path
+
+OUTPUT_DIR = Path(__file__).resolve().parent
 
 datasets = ['Celeb-DF v2', 'DFD', 'FaceForensics++\nC23']
 fake_counts = [5639, 3068, 6000]
@@ -27,5 +30,5 @@ for bar in bars2:
             f'{int(bar.get_height())}', ha='center', va='bottom', fontsize=9)
 
 plt.tight_layout()
-plt.savefig('/home/bgozegu/Masaüstü/veri_dagilimi.png', dpi=150, bbox_inches='tight')
+plt.savefig(OUTPUT_DIR / 'veri_dagilimi.png', dpi=150, bbox_inches='tight')
 print("Kaydedildi: veri_dagilimi.png")

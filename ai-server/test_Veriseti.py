@@ -3,14 +3,32 @@ import cv2
 import torch
 import timm
 import numpy as np
+import argparse
+from pathlib import Path
 from tqdm import tqdm
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, roc_auc_score
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
+# --- Argümanlar ---
+parser = argparse.ArgumentParser(description="EfficientNet-B5 Veri Seti Testi")
+parser.add_argument("--fake",  required=True, help="Fake görsel klasörünün yolu")
+parser.add_argument("--real",  required=True, help="Real görsel klasörünün yolu")
+parser.add_argument("--model", default=None,  help="Model .pth yolu (varsayılan: ../models/en_iyi_b5_sbi.pth)")
+args = parser.parse_args()
+
+# --- Dosya Yolları ---
+BASE_DIR   = Path(__file__).resolve().parent
+MODELS_DIR = BASE_DIR.parent / "models"
+model_path = Path(args.model) if args.model else MODELS_DIR / "en_iyi_b5_sbi.pth"
+
+fake_folder = args.fake
+real_folder = args.real
+
+# --- Model ---
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = timm.create_model('efficientnet_b5', pretrained=False, num_classes=2)
-model.load_state_dict(torch.load('/home/bgozegu/Masaüstü/BitirmeProjesi/models/en_iyi_b5_sbi.pth', map_location=device))
+model.load_state_dict(torch.load(model_path, map_location=device))
 model = model.to(device)
 model.eval()
 
@@ -22,7 +40,6 @@ transform = A.Compose([
 
 def test_folder(folder, true_label):
     preds = []
-    
     for img_name in tqdm(os.listdir(folder), desc=folder):
         if not img_name.endswith(('.jpg', '.png', '.jpeg')):
             continue
@@ -39,17 +56,12 @@ def test_folder(folder, true_label):
             preds.append((true_label, pred))
     return preds
 
-# Klasör yollarını değiştir
-fake_folder = "/home/bgozegu/Masaüstü/model/dataset_v2/val/fake"
-real_folder = "/home/bgozegu/Masaüstü/model/dataset_v2/val/real"
-
 results = test_folder(fake_folder, 0) + test_folder(real_folder, 1)
 y_true = [r[0] for r in results]
 y_pred = [r[1] for r in results]
 
 print(classification_report(y_true, y_pred, target_names=['fake', 'real']))
 
-from sklearn.metrics import roc_auc_score
 import torch.nn.functional as F
 
 def test_folder_probs(folder, true_label):
@@ -70,7 +82,7 @@ def test_folder_probs(folder, true_label):
     return results
 
 results = test_folder_probs(fake_folder, 0) + test_folder_probs(real_folder, 1)
-y_true = [r[0] for r in results]
+y_true   = [r[0] for r in results]
 y_scores = [r[1] for r in results]
 
 auc = roc_auc_score(y_true, y_scores)
