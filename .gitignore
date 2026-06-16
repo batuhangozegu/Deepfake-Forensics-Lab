@@ -27,6 +27,7 @@ ai-server/__pycache__/
 ai-server/venv/
 ai-server/env/
 ai-server/.env
+ai-server/static_images/
 *.pyc
 
 # =========================
